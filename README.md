@@ -1,8 +1,8 @@
 # nginx-operator
-// TODO(user): Add simple overview of use/purpose
+// basic operator that watches nginx deployment manifest
 
 ## Description
-// TODO(user): An in-depth paragraph about your project and overview of use
+// it simply defines logic for nginx deployment with reconciler acting on the operand in a simple way but will be updated for more advanced use 
 
 ## Getting Started
 You’ll need a Kubernetes cluster to run against. You can use [KIND](https://sigs.k8s.io/kind) to get a local cluster for testing, or run against a remote cluster.
