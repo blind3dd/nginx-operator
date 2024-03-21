@@ -22,6 +22,9 @@ import (
 	appsv1 "k8s.io/api/apps/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
+	"os"
+	"path/filepath"
+	"regexp"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
@@ -66,7 +69,12 @@ func (r *NginxOperatorReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 	if err != nil && errors.IsNotFound(err) {
 		create = true
 		logger.Info("operator resource object not found, attempting to recreate.")
-		deployment = assets.GetDeploymentFromFile("./assets/manifests/nginx_deployment.yaml")
+		var files *[]*os.File
+		err := filepath.Walk("assets", findFile("0", files))
+		if err != nil {
+			logger.Error(err, "i/o failure, error: %v", err)
+		}
+		deployment = assets.GetDeploymentFromFile(err.Error())
 	} else if err != nil {
 		logger.Error(err, "failed to get existing nginx deployment manifest.")
 		return ctrl.Result{}, err
@@ -106,6 +114,29 @@ func (r *NginxOperatorReconciler) SetupWithManager(mgr ctrl.Manager) error {
 		For(&operatorv1alpha1.NginxOperator{}).
 		Owns(&appsv1.Deployment{}).
 		Complete(r)
+}
+
+func findFile(fileId string, files *[]*os.File) func(path string, info os.FileInfo, err error) error {
+	return func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		// TODO make sure it's properly defined
+		p := regexp.MustCompile("^.*_(.yaml)$").String()
+		//p.ReplaceAllStringFunc(p, func(s string) string {
+		//	return p.String()
+		//})
+		found, _ := filepath.Match(p, fileId)
+
+		if !info.IsDir() && found {
+			f, err := os.Open(path)
+			if err != nil {
+				panic(err)
+			}
+			*files = append(*files, f)
+		}
+		return nil
+	}
 }
 
 var create bool
