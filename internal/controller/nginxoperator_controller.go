@@ -38,7 +38,7 @@ type NginxOperatorReconciler struct {
 //+kubebuilder:rbac:groups=operator.cloudops.com,resources=nginxoperators,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=operator.cloudops.com,resources=nginxoperators/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=operator.cloudops.com,resources=nginxoperators/finalizers,verbs=update
-//+kubebuilder:rbac:groups=apps,resources=deployments,verbs=get;list;watch;create;update;patch;delete
+//+kubebuilder:rbac:groups=apps,resources=pods,verbs=get;list;watch;create;update;patch;delete
 
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
 // move the current state of the cluster closer to the desired state.
@@ -53,10 +53,10 @@ func (r *NginxOperatorReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 	logger := log.FromContext(ctx)
 	operatorCR := &operatorv1alpha1.NginxOperator{}
 	if err := r.Get(ctx, req.NamespacedName, operatorCR); err != nil && errors.IsNotFound(err) {
-		logger.Info("operator resource object not found.")
+		logger.Info("operator resource object not found, result: %s", ctrl.Result{})
 		return ctrl.Result{}, nil
 	} else if err != nil {
-		logger.Error(err, "failed to get operator resource object")
+		logger.Error(err, "failed to get operator resource object, result: %s", ctrl.Result{})
 		return ctrl.Result{}, err
 	}
 
@@ -66,7 +66,7 @@ func (r *NginxOperatorReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 	if err != nil && errors.IsNotFound(err) {
 		create = true
 		logger.Info("operator resource object not found, attempting to recreate.")
-		deployment = assets.GetDeploymentFromFile("assets/manifests/nginx_deployment.yaml")
+		deployment = assets.GetDeploymentFromFile("./assets/manifests/nginx_deployment.yaml")
 	} else if err != nil {
 		logger.Error(err, "failed to get existing nginx deployment manifest.")
 		return ctrl.Result{}, err
@@ -80,6 +80,8 @@ func (r *NginxOperatorReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 	}
 	if operatorCR.Spec.Port != nil {
 		deployment.Spec.Template.Spec.Containers[0].Ports[0].ContainerPort = *operatorCR.Spec.Port
+	} else {
+		logger.Error(err, "port is required and has not been defined ")
 	}
 
 	err = ctrl.SetControllerReference(operatorCR, deployment, r.Scheme)
@@ -90,6 +92,7 @@ func (r *NginxOperatorReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 
 	if create {
 		err = r.Create(ctx, deployment)
+		logger.Error(err, "deployment has been created through operator")
 	} else {
 		err = r.Update(ctx, deployment)
 	}

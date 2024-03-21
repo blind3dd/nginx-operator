@@ -37,7 +37,7 @@ type NginxOperatorSpec struct {
 	Replicas *int32 `json:"replicas,omitempty"`
 
 	// ForceRedeploy is any string that when modified instructs
-	// the operator to redeploy the operand
+	//                  the operator to redeploy the operand
 	ForceRedeploy string `json:"forceRedeploy,omitempty"`
 }
 

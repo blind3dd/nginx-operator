@@ -7,7 +7,7 @@ rules:
 - apiGroups:
   - apps
   resources:
-  - deployments
+  - pods
   verbs:
   - create
   - delete
