@@ -5,3 +5,8 @@ metadata:
   annotations:
     cert-manager.io/inject-ca-from: CERTIFICATE_NAMESPACE/CERTIFICATE_NAME
   name: nginxoperators.operator.cloudops.com
+spec:
+  group: operator
+  names: []
+  scope: Namespaced
+  versions: []

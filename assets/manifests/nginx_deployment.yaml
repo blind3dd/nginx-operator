@@ -19,4 +19,4 @@ spec:
         - name: "nginx"
           image: "nginx:latest"
           command:
-            - "nginx"
+            - "nginx -t && nginx"

@@ -74,7 +74,7 @@ func (r *NginxOperatorReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 		if err != nil {
 			logger.Error(err, "i/o failure, error: %v", err)
 		}
-		deployment = assets.GetDeploymentFromFile(err.Error())
+		deployment = assets.GetDeploymentFromFile("./assets/nginx_deployment.yaml")
 	} else if err != nil {
 		logger.Error(err, "failed to get existing nginx deployment manifest.")
 		return ctrl.Result{}, err
