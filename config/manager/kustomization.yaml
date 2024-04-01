@@ -5,7 +5,7 @@ kind: Kustomization
 images:
 - name: controller
   newName: localhost:5000/nginx-operator
-  newTag: latest
+  newTag: v1.0.0
 - name: nginx-operator
   newName: nginx-operator
   newTag: latest
