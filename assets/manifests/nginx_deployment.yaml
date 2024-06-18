@@ -2,11 +2,11 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: "nginx-deployment"
-  namespace: "nginx-operator-ns"
+  namespace: "nginx-operator-system"
   labels:
     k8s-app: "nginx"
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       k8s-app: "nginx"
@@ -19,5 +19,12 @@ spec:
         - name: "nginx"
           image: "nginx:latest"
           imagePullPolicy: Always
-          command:
-            - "nginx -t && nginx"
+          ports:
+            - containerPort: 80
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          command: ["nginx", "-g", "daemon off;"]

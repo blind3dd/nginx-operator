@@ -18,7 +18,6 @@ package main
 
 import (
 	"flag"
-	"k8s.io/apimachinery/pkg/runtime/serializer"
 	_ "k8s.io/client-go/applyconfigurations/apps/v1"
 	"os"
 
@@ -39,9 +38,9 @@ import (
 )
 
 var (
-	scheme     = runtime.NewScheme()
-	appsCodecs = serializer.NewCodecFactory(scheme)
-	setupLog   = ctrl.Log.WithName("setup")
+	//appsCodecs = serializer.NewCodecFactory(scheme)
+	scheme   = runtime.NewScheme()
+	setupLog = ctrl.Log.WithName("setup")
 )
 
 func init() {
