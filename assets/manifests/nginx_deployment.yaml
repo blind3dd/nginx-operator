@@ -19,13 +19,12 @@ spec:
         - name: "nginx"
           image: "nginx:latest"
           imagePullPolicy: Always
-#          ports:
-#            - containerPort: 80
-#          livenessProbe:
-#            httpGet:
-#              path: /
-#              port: 80
-#            initialDelaySeconds: 5
-#            periodSeconds: 5
+          ports:
+            - containerPort: 80
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 5
           command: ["nginx", "-g", "daemon off;"]
-# should fail as per crd since there's no port

@@ -64,9 +64,10 @@ func (r *NginxOperatorReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 		return ctrl.Result{}, err
 	}
 
-	deployment := &appsv1.Deployment{}
+	deployment := assets.GetDeployment()
 	create = false
 	err := r.Get(ctx, req.NamespacedName, deployment)
+
 	if err != nil && errors.IsNotFound(err) {
 		create = true
 		logger.Info("operator resource object not found, attempting to recreate.")
@@ -124,9 +125,6 @@ func findFile(fileId string, files *[]*os.File) func(path string, info os.FileIn
 		}
 		// TODO make sure it's properly defined
 		p := regexp.MustCompile("^.*_(.yaml)$").String()
-		//p.ReplaceAllStringFunc(p, func(s string) string {
-		//	return p.String()
-		//})
 		found, _ := filepath.Match(p, fileId)
 
 		if !info.IsDir() && found {
